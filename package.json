@@ -132,7 +132,7 @@
     "babel-preset-react-optimize": "^1.0.1",
     "babel-preset-stage-0": "^6.24.1",
     "babel-register": "^6.24.1",
-    "babili-webpack-plugin": "^0.1.2",
+    "babili-webpack-plugin": "0.1.1",
     "chalk": "^2.0.1",
     "concurrently": "^3.5.0",
     "cross-env": "^5.0.0",
@@ -186,8 +186,10 @@
     "webpack-merge": "^4.1.0"
   },
   "dependencies": {
+    "bootstrap": "^3.3.7",
     "devtron": "^1.4.0",
     "electron-debug": "^1.2.0",
+    "electron-json-storage": "^4.0.2",
     "font-awesome": "^4.7.0",
     "history": "^4.6.3",
     "react": "^15.6.1",
@@ -199,7 +201,8 @@
     "react-router-redux": "^5.0.0-alpha.6",
     "redux": "^3.7.1",
     "redux-thunk": "^2.2.0",
-    "source-map-support": "^0.4.15"
+    "source-map-support": "^0.4.15",
+    "uuid": "^3.1.0"
   },
   "devEngines": {
     "node": ">=7.x",

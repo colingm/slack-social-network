@@ -1,0 +1,49 @@
+#close {
+  background-color: #FF5F57;
+}
+
+#minimize {
+  background-color: #FFBE2F;
+}
+
+#maximize {
+  background-color: #28CA42;
+}
+
+#traffic_lights {
+  margin-bottom: 5px;
+}
+
+.light {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  margin: 3px;
+  cursor: pointer;
+}
+
+.light:hover {
+  filter: brightness(120%);
+}
+
+.light:active {
+  filter: brightness(80%);
+}
+
+
+
+.container {
+  position: absolute;
+  top: 30%;
+  left: 10px;
+  text-align: center;
+}
+
+.container h2 {
+  font-size: 5rem;
+}
+
+.container a {
+  font-size: 1.4rem;
+}

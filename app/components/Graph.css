@@ -1,0 +1,32 @@
+#graphNav {
+  margin-bottom: 0px;
+  margin-top: 10px;
+}
+
+.graphNavLink a {
+  padding: 5px 10px 10px 10px;
+  color: white;
+  background-color: #4D384B;
+}
+
+.graphNavLink a:hover {
+  color: white;
+  filter: brightness(80%);
+}
+
+.graphNavLinkActive {
+  color: white;
+  filter: brightness(80%);
+}
+
+.graphNavAdd {
+  float: right;
+}
+
+.graphNavAdd a {
+  color: white;
+}
+
+.graphNavAdd a:hover {
+  filter: brightness(150%);
+}

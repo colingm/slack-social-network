@@ -1,0 +1,20 @@
+body {
+  background-color: #FFFFFF;
+}
+
+#main {
+  padding: 5px;
+}
+
+#loadingContainer {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+#loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
