@@ -91,7 +91,7 @@ class ViewServer extends Component {
   render = () => {
     const { server } = this.props;
     return (
-      <div>
+      <span>
         <div id={styles.topbar} className="row">
           <div className="container-fluid">
             <div id={styles.draggable} className="row">
@@ -105,7 +105,7 @@ class ViewServer extends Component {
         <div id={styles.content} className="row">
           <GraphRouter serverName={server.name} />
         </div>
-      </div>
+      </span>
     )
   }
 }

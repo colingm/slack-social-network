@@ -30,3 +30,12 @@
 .graphNavAdd a:hover {
   filter: brightness(150%);
 }
+
+.fullHeight {
+  height: 100%;
+}
+
+.svg {
+  height: 85vh;
+  width: 100%;
+}
