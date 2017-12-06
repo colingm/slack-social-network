@@ -84,7 +84,7 @@ class ForceGraph extends Component {
     this.createForceGraph();
   }
 
-  createBarChart = () => {
+  createForceGraph = () => {
     const me = this.node;
     const data = this.props.data;
 
