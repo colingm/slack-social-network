@@ -2,7 +2,6 @@
 import { deepCopy } from '../util';
 import storage from 'electron-json-storage';
 
-let def_icon = "http://iosicongallery.com/img/512/slack-2014.png";
 
 export const actions = {
   LOAD_SERVERS: 'LOAD_SERVERS',
@@ -49,9 +48,8 @@ export function servers(state = {}, action: {type: string}) {
   switch (action.type) {
     case actions.ADD_SERVER: {
       let new_state = deepCopy(state);
-      new_state[action.name] = {
-        name: action.name,
-        icon: def_icon,
+      new_state[action.id] = {
+        id: action.id,
         graphs: {
         }
       };
@@ -61,7 +59,7 @@ export function servers(state = {}, action: {type: string}) {
     }
     case actions.ADD_GRAPH: {
       let new_state = deepCopy(state);
-      new_state[action.serverName].graphs[action.graphName] = {
+      new_state[action.serverId].graphs[action.graphName] = {
         name : action.graphName
       }
       storage.set('servers', new_state);

@@ -17,13 +17,13 @@ export default class Loading extends Component {
     this.render.bind(this);
 
     if (!this.props.doneLoading) {
-      storage.get('servers', (data, error) => {
+      storage.get('servers', (error, data) => {
         if (data === null) {
           data = {};
         }
         this.props.loadServers(data);
       });
-      storage.get('servers_list', (data, error) => {
+      storage.get('servers_list', (error, data) => {
         if (!Array.isArray(data) || data.length == 0) {
           axios.get(SERVER_LIST_URL).then((response) => {
             this.props.loadServersList(response.data);

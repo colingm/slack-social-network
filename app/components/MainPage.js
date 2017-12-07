@@ -17,7 +17,7 @@ class AddServer extends Component {
   };
 
   handleClick = (e) => {
-    const value = this.state.value;
+    const value = +this.state.value;
     this.setState({value: ""});
     this.props.onCreate(value);
   }
@@ -55,10 +55,10 @@ class AddServerButton extends Component {
 
 class ViewServerButton extends Component {
   render = () => {
-    const { name, icon } = this.props;
+    const { id, icon } = this.props;
     return (
       <div className={styles.serverButtonContainer}>
-        <NavLink to={"/main/servers/"+name} activeClassName={styles.navLinkSelected}>
+        <NavLink to={"/main/servers/"+id} activeClassName={styles.navLinkSelected}>
           <img src={icon} className={styles.serverButton} />
         </NavLink>
       </div>
@@ -70,9 +70,9 @@ class Sidebar extends Component {
   render = () => {
     const { servers } = this.props;
     let buttons = []
-    for (let name in servers) {
-      let server = servers[name];
-      buttons.push(<ViewServerButton key={uuid()} name={name}
+    for (let id in servers) {
+      let server = servers[id];
+      buttons.push(<ViewServerButton key={uuid()} id={server.id}
                                      icon={server.icon} />);
     }
     return (
@@ -103,7 +103,7 @@ class ViewServer extends Component {
           </div>
         </div>
         <div id={styles.content} className="row">
-          <GraphRouter serverName={server.name} />
+          <GraphRouter server={server} />
         </div>
       </span>
     )
@@ -111,7 +111,7 @@ class ViewServer extends Component {
 }
 
 class MainPage extends Component {
-  onCreateServer = (name: string) => {
+  onCreateServer = (name: number) => {
     this.props.addServer(name);
     this.props.selectServer(name);
   }

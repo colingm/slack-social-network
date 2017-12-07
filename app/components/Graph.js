@@ -25,14 +25,14 @@ export class GraphRouter extends Component {
     if (match.params.graph in graphs) {
       return (<ViewGraph graph={server.graphs[match.params.graph]} />);
     } else {
-      return (<Redirect to={"/main/servers/"+server.name+"/graphs"} />);
+      return (<Redirect to={"/main/servers/"+server.id+"/graphs"} />);
     }
   }
 
   defaultRender = () => {
     const { server } = this.props;
     const graphs = server.graphs;
-    const serverLink = "/main/servers/"+server.name;
+    const serverLink = "/main/servers/"+server.id;
     if (Object.keys(graphs).length == 0) {
       return (
         <Redirect to={serverLink+"/addGraph"} />
@@ -52,7 +52,7 @@ export class GraphRouter extends Component {
 
   render = () => {
     const { server } = this.props;
-    const serverLink = "/main/servers/"+server.name;
+    const serverLink = "/main/servers/"+server.id;
     return (
       <Switch>
         <Route path={serverLink+"/graphs/:graph"} render={this.renderGraph} />
@@ -234,7 +234,7 @@ export class GraphList extends Component {
   render = () => {
     let graphList = []
     const { graphs } = this.props.server;
-    const serverLink = "/main/servers/"+this.props.server.name;
+    const serverLink = "/main/servers/"+this.props.server.id;
     for (let i in graphs) {
       graphList.push(
         <li key={uuid()} className={styles.graphNavLink}>

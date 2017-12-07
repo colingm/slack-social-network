@@ -1,4 +1,5 @@
 import { bindActionCreators } from 'redux';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { push, replace, go } from 'react-router-redux';
 import { deepCopy } from '../util';

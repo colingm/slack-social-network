@@ -1,5 +1,5 @@
 import { bindActionCreators } from 'redux';
-import { withRouter } from 'react-router-dom'
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
 import { GraphRouter } from '../components/Graph';
@@ -22,23 +22,23 @@ let actionProps = {
   }
 }
 
-function mapStateToProps(state, {serverName}) {
+function mapStateToProps(state, {server}) {
   return {
-    server: state.servers[serverName],
+    server: server,
   };
 }
 
-function mapDispatchToProps(dispatch, {serverName}) {
+function mapDispatchToProps(dispatch, {server}) {
   return {
     addGraph: (graphName: string) => {
       dispatch({
         type: actions.ADD_GRAPH,
-        serverName: serverName,
+        serverId: server.id,
         graphName: graphName
       });
     },
     selectGraph: (graphName: string) => {
-      return dispatch(push("/main/servers/"+serverName+"/graphs/"+graphName));
+      return dispatch(push("/main/servers/"+server.id+"/graphs/"+graphName));
     }
   };
 }
