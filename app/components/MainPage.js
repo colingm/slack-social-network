@@ -6,33 +6,75 @@ import GraphRouter from '../containers/GraphPage.js'
 import { GraphList } from './Graph.js'
 import uuid from 'uuid/v4';
 import styles from './MainPage.css';
+import Autocomplete from 'react-autocomplete';
 
 class AddServer extends Component {
   state = {
-    value: ""
+    value: "",
+    selected: null
   };
 
   handleChange = (e) => {
-    this.setState({value: e.target.value});
-  };
+    let selected = this.props.serversList.findIndex((server) => {
+      return server.domain == e.target.value;
+    });
+
+    this.setState({
+      value: e.target.value,
+      selected: selected
+    });
+  }
+
+  handleSelect = (value, server) => {
+    let selected = this.props.serversList.findIndex((server) => {
+      return server.domain == value;
+    });
+
+    this.setState({
+      value: server.domain,
+      selected: selected
+    });
+  }
 
   handleClick = (e) => {
-    const value = +this.state.value;
-    this.setState({value: ""});
-    this.props.onCreate(value);
+    this.props.onCreate(this.state.selected);
   }
 
   render = () => {
-    const { handleClick, handleChange } = this;
-    let { value } = this.state;
+    const { handleClick, handleChange, handleSelect } = this;
+    let { selected, value } = this.state;
+    const { serversList } = this.props;
     return (
       <div>
         <div id={styles.topbar} className="row">
           <h2>Add Server</h2>
         </div>
         <div id={styles.content} className="row">
-          <input type="text" className="form-control" onChange={handleChange} placeholder="Server Name" value={value} />
-          <button className="btn btn-primary" onClick={handleClick}>Add</button>
+          <Autocomplete
+            getItemValue={(server) => server.domain}
+            shouldItemRender={(server, value) => {
+                let domain = server.domain.toLowerCase()
+                return domain.indexOf(value.toLowerCase()) > -1
+            }}
+            items={serversList}
+            renderItem={(server, isHighlighted) =>
+              <div style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+                {server.domain}
+              </div>
+            }
+            inputProps={{
+              className: "form-control",
+              placeholder: "Team name"
+            }}
+            value={value}
+            onChange={handleChange}
+            onSelect={handleSelect}
+            selectOnBlur={true}
+          />
+          <button className="btn btn-primary" onClick={handleClick}
+                  disabled={selected === -1}>
+            Add
+          </button>
         </div>
       </div>
     )
@@ -55,14 +97,24 @@ class AddServerButton extends Component {
 
 class ViewServerButton extends Component {
   render = () => {
-    const { id, icon } = this.props;
-    return (
-      <div className={styles.serverButtonContainer}>
-        <NavLink to={"/main/servers/"+id} activeClassName={styles.navLinkSelected}>
-          <img src={icon} className={styles.serverButton} />
-        </NavLink>
-      </div>
-    )
+    const { id, icon, isLoaded, progress } = this.props;
+    if (isLoaded) {
+      return (
+        <div className={styles.serverButtonContainer}>
+          <NavLink to={"/main/servers/"+id} activeClassName={styles.navLinkSelected}>
+            <img src={icon} className={styles.serverButton} />
+          </NavLink>
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.serverButtonContainer}>
+          <NavLink to={"/main/servers/"+id} activeClassName={styles.navLinkSelected}>
+            {progress}
+          </NavLink>
+        </div>
+      );
+    }
   }
 }
 
@@ -72,8 +124,10 @@ class Sidebar extends Component {
     let buttons = []
     for (let id in servers) {
       let server = servers[id];
-      buttons.push(<ViewServerButton key={uuid()} id={server.id}
-                                     icon={server.icon} />);
+      buttons.push(<ViewServerButton
+                    key={uuid()} id={server.id}
+                    icon={server.icon} isLoaded={server.isLoaded} 
+                    progress={server.progress} />);
     }
     return (
       <div>
@@ -132,6 +186,8 @@ class MainPage extends Component {
 
   renderServer = ({match}) => {
     const { servers } = this.props;
+    console.log(match.params.server);
+    console.log(servers);
     if (match.params.server in servers) {
       return (<ViewServer server={servers[match.params.server]} />);
     } else {
@@ -140,7 +196,7 @@ class MainPage extends Component {
   }
 
   render = () => {
-    const { servers } = this.props;
+    const { servers, serversList } = this.props;
     return (
       <div className={styles.wrapper}>
         <nav id={styles.sidebar}>
@@ -150,7 +206,7 @@ class MainPage extends Component {
           <Switch>
             <Route path="/main/servers/:server" render={this.renderServer} />
             <Route path="/main/addServer" render={() => (
-              <AddServer onCreate={this.onCreateServer} />
+              <AddServer serversList={serversList} onCreate={this.onCreateServer} />
             )} />
             <Route render={this.renderDefaultRoute} />
           </Switch>
