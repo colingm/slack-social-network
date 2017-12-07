@@ -1,6 +1,6 @@
 /* eslint flowtype-errors/show-errors: 0 */
 import React from 'react';
-import { Switch, Route } from 'react-router';
+import { Switch, Redirect, Route } from 'react-router';
 import App from './containers/App';
 import HomePage from './containers/HomePage';
 import MainPage from './containers/MainPage';
@@ -13,7 +13,7 @@ export default function() {
       <Switch>
         <Route path="/counter" component={CounterPage} />
         <Route path="/main" component={MainPage} />
-        <Route exact path="/" component={LoadingPage} />
+        <Redirect from="/" to="/main" />
       </Switch>
     </App>
   );

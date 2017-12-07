@@ -4,19 +4,30 @@ import { push, replace, go } from 'react-router-redux';
 import { deepCopy } from '../util';
 import { actions } from '../reducers/servers';
 import Loading from '../components/Loading';
-import storage from 'electron-json-storage';
 
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadState: (state) => {
+    loadServers: (state) => {
       dispatch({
-        type: actions.LOAD_STATE,
+        type: actions.LOAD_SERVERS,
         new_state: state
       });
-      dispatch(replace("/main"));
+    },
+    loadServersList: (state) => {
+      dispatch({
+        type: actions.LOAD_SERVERS_LIST,
+        new_state: state
+      });
     }
   }
 }
 
-export default connect(null, mapDispatchToProps)(Loading);
+function mapStateToProps(state) {
+  return {
+    doneLoading: state.loading_status.servers_loaded &&
+                 state.loading_status.servers_list_loaded
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Loading);

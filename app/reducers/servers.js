@@ -5,10 +5,45 @@ import storage from 'electron-json-storage';
 let def_icon = "http://iosicongallery.com/img/512/slack-2014.png";
 
 export const actions = {
-  LOAD_STATE: 'LOAD_STATE',
+  LOAD_SERVERS: 'LOAD_SERVERS',
+  LOAD_SERVERS_LIST: 'LOAD_SERVERS_LIST',
   ADD_SERVER: 'ADD_SERVER',
   ADD_GRAPH: 'ADD_GRAPH'
 };
+
+const LOADING_STATUS_DEFAULT = {
+  servers_loaded: false,
+  servers_list_loaded: false
+};
+
+export function loading_status(state = LOADING_STATUS_DEFAULT, action) {
+  switch (action.type) {
+    case actions.LOAD_SERVERS: {
+      let new_state = deepCopy(state);
+      new_state.servers_loaded = true;
+      return new_state;
+      break;
+    }
+    case actions.LOAD_SERVERS_LIST: {
+      let new_state = deepCopy(state);
+      new_state.servers_list_loaded = true;
+      return new_state;
+      break;
+    }
+  }
+  return state;
+}
+
+export function servers_list(state = {}, action: {type: string}) {
+  switch (action.type) {
+    case actions.LOAD_SERVERS_LIST: {
+      storage.set('servers_list', action.new_state);
+      return action.new_state;
+      break;
+    }
+  }
+  return state;
+}
 
 export function servers(state = {}, action: {type: string}) {
   switch (action.type) {
@@ -32,7 +67,7 @@ export function servers(state = {}, action: {type: string}) {
       storage.set('servers', new_state);
       return new_state;
     }
-    case actions.LOAD_STATE: {
+    case actions.LOAD_SERVERS: {
       return action.new_state;
       break;
     }
