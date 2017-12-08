@@ -18,7 +18,6 @@ export default class Loading extends Component {
 
     if (!this.props.doneLoading) {
       storage.get('servers', (error, data) => {
-        data = {};
         if (data === null) {
           data = {};
         }

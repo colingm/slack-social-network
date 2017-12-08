@@ -98,7 +98,7 @@ class AddServerButton extends Component {
 class ViewServerButton extends Component {
   render = () => {
     const { id, icon, isLoaded, progress } = this.props;
-    if (isLoaded) {
+    if (true) {
       return (
         <div className={styles.serverButtonContainer}>
           <NavLink to={"/main/servers/"+id} activeClassName={styles.navLinkSelected}>
