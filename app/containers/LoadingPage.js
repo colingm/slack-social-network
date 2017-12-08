@@ -6,10 +6,9 @@ import { deepCopy } from '../util';
 import { actions } from '../reducers/servers';
 import Loading from '../components/Loading';
 
-
 function mapDispatchToProps(dispatch) {
   return {
-    loadServers: (state) => {
+    loadServers: (dispatch, state) => {
       dispatch({
         type: actions.LOAD_SERVERS,
         new_state: state
@@ -31,4 +30,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Loading);
+export default connect(mapStateToProps)(Loading);

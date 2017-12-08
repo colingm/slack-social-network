@@ -7,6 +7,7 @@ import { GraphList } from './Graph.js'
 import uuid from 'uuid/v4';
 import styles from './MainPage.css';
 import Autocomplete from 'react-autocomplete';
+import { PeriodicRequest } from '../util.js'
 
 class AddServer extends Component {
   state = {

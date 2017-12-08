@@ -6,38 +6,16 @@ import styles from './Loading.css';
 import loading from '../static/loading.gif';
 import storage from 'electron-json-storage';
 import axios from 'axios';
+import { loadServersIfNeeded, 
+         loadServersListIfNeeded } from '../actions/servers.js'
 
 const SERVER_LIST_URL = 'http://35.226.139.18:8080/api/v1/teams';
 
 export default class Loading extends Component {
 
-  constructor(props) {
-    super(props);
-
-    this.render.bind(this);
-
-    if (!this.props.doneLoading) {
-      storage.get('servers', (error, data) => {
-        if (data === null) {
-          data = {};
-        }
-        this.props.loadServers(data);
-      });
-      storage.get('servers_list', (error, data) => {
-        if (!Array.isArray(data) || data.length == 0) {
-          axios.get(SERVER_LIST_URL).then((response) => {
-            this.props.loadServersList(response.data);
-          }).catch((error) => {
-            console.log(error);
-          });
-        } else {
-          this.props.loadServersList(data);
-        }
-      });
-    }
-  }
-
   render() {
+    this.props.dispatch(loadServersIfNeeded());
+    this.props.dispatch(loadServersListIfNeeded());
     if (!this.props.doneLoading) {
       return (
         <div id={styles.main} >

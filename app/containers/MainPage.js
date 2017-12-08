@@ -41,8 +41,8 @@ function mapStateToProps(state) {
       id: s_id,
       icon: s_icon,
       name: s_name,
-      isLoaded: state.servers_list[s_id].ready,
-      progress: state.servers_list[s_id].progress,
+      isLoaded: state.servers[id].ready,
+      progress: state.servers[id].progress,
       graphs: state.servers[id].graphs
     };
   }
