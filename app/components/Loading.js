@@ -7,7 +7,8 @@ import loading from '../static/loading.gif';
 import storage from 'electron-json-storage';
 import axios from 'axios';
 import { loadServersIfNeeded, 
-         loadServersListIfNeeded } from '../actions/servers.js'
+         loadServersListIfNeeded,
+         loadServerProgressIfNeeded } from '../actions/servers.js'
 
 const SERVER_LIST_URL = 'http://35.226.139.18:8080/api/v1/teams';
 

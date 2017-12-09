@@ -8,16 +8,19 @@ export const actions = {
 
   RECEIVE_SERVERS: 'RECEIVE_SERVERS',
   RECEIVE_SERVERS_LIST: 'RECEIVE_SERVERS_LIST',
+  RECEIVE_SERVER_PROGRESS: 'RECEIVE_SERVER_PROGRESS',
 
   REQUEST_SERVERS: 'REQUEST_SERVERS',
   REQUEST_SERVERS_LIST: 'REQUEST_SERVERS_LIST',
   REQUEST_SERVER_PROGRESS: 'REQUEST_SERVER_PROGRESS',
+
+  TIMEOUT_SERVER_PROGRESS: 'TIMEOUT_SERVER_PROGRESS',
 };
 
 const REQUESTS_DEFAULT = {
   servers_requested: false,
   servers_list_requested: false,
-  server_requested: [],
+  server_progress_requested: {},
 };
 
 export function requests(state = REQUESTS_DEFAULT, action) {
@@ -34,9 +37,9 @@ export function requests(state = REQUESTS_DEFAULT, action) {
       return new_state;
       break;
     }
-    case actions.REQUEST_SERVERS_PROGRESS: {
+    case actions.REQUEST_SERVER_PROGRESS: {
       let new_state = deepCopy(state);
-      new_state.server_requested.push(action.server);
+      new_state.server_progress_requested[action.serverId] = 1;
       return new_state;
       break;
     }
@@ -52,6 +55,14 @@ export function requests(state = REQUESTS_DEFAULT, action) {
       return new_state;
       break;
     }
+    case actions.TIMEOUT_SERVER_PROGRESS: {
+      let new_state = deepCopy(state);
+      new_state.server_progress_requested[action.serverId] = {
+        stalling: false
+      };
+      return new_state;
+      break;
+    }
   }
   return state;
 }
@@ -59,7 +70,6 @@ export function requests(state = REQUESTS_DEFAULT, action) {
 const LOADING_STATUS_DEFAULT = {
   servers_loaded: false,
   servers_list_loaded: false,
-  servers_progress: []
 };
 
 export function loading_status(state = LOADING_STATUS_DEFAULT, action) {
@@ -97,7 +107,6 @@ export function servers(state = {}, action: {type: string}) {
       let new_state = deepCopy(state);
       new_state[action.id] = {
         id: action.id,
-        ready: false,
         progress: 0,
         graphs: {
         }
@@ -116,6 +125,12 @@ export function servers(state = {}, action: {type: string}) {
     }
     case actions.RECEIVE_SERVERS: {
       return action.new_state;
+      break;
+    }
+    case actions.RECEIVE_SERVER_PROGRESS: {
+      let new_state = deepCopy(state);
+      new_state[action.serverId].progress = action.progress;
+      return new_state;
       break;
     }
   }

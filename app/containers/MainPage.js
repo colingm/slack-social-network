@@ -57,4 +57,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(actionProps, dispatch);
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MainPage));
+export default withRouter(connect(mapStateToProps)(MainPage));
