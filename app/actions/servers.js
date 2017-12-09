@@ -67,11 +67,14 @@ function shouldLoadServerProgress(serverId, state) {
   );
 }
 
+const FORCE_REFRESH = true;
+
 export function loadServersListIfNeeded() {
   return (dispatch, getState) => {
     if (shouldLoadServersList(getState())) {
       dispatch(requestServersList());
       storage.get('servers_list', (error, data) => {
+        if (FORCE_REFRESH) data = null;
         if (!Array.isArray(data) || data.length == 0) {
           axios.get(SERVER_LIST_URL).then((response) => {
             dispatch(receiveServersList(response.data));
@@ -91,6 +94,7 @@ export function loadServersIfNeeded() {
     if (shouldLoadServers(getState())) {
       dispatch(requestServers());
       storage.get('servers', (error, data) => {
+        if (FORCE_REFRESH) data = null;
         if (data === null) {
           data = {};
         }
