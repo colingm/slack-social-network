@@ -4,32 +4,6 @@
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
-    // small data set, 1 group
-    // var data = {
-    //     "nodes": [
-    //         {"name": "Abe"},
-    //         {"name": "Bob"},
-    //         {"name": "Conrad"},
-    //         {"name": "Don"},
-    //         {"name": "Eric"},
-    //         {"name": "Faith"},
-    //         {"name": "Garret"},
-    //         {"name": "Hilbert"},
-    //         {"name": "Ivan"}
-    //     ],
-    //     "links": [
-    //         {"source": "Abe", "target": "Bob", "mentions": 7},
-    //         {"source": "Abe", "target": "Ivan", "mentions": 9},
-    //         {"source": "Abe", "target": "Conrad", "mentions": 100},
-    //         {"source": "Abe", "target": "Don", "mentions": 60},
-    //         {"source": "Don", "target": "Conrad", "mentions": 1},
-    //         {"source": "Don", "target": "Eric", "mentions": 7},
-    //         {"source": "Eric", "target": "Faith", "mentions": 55},
-    //         {"source": "Eric", "target": "Garret", "mentions": 16},
-    //         {"source": "Eric", "target": "Hilbert", "mentions": 82}
-    //     ]
-    // };
-
     // large data set, 2 groups
     var data = {
         "nodes": [
@@ -386,6 +360,26 @@
             {"source": "Mme.Hucheloup", "target": "Enjolras", "mentions": 1}
         ]
     };
+
+    // display only nodes and links that have >= thresholdMentions number of mentions
+    var thresholdMentions = 13;
+    // gets rid of links that are filtered out
+    data.links = data.links.filter(function (link) { return (link.mentions >= thresholdMentions);});
+    // gets rid of unlinked nodes
+    var usersWithLinks = new Set();
+    for (i = 0; i < data.links.length; i++){
+        usersWithLinks.add(data.links[i].source);
+        usersWithLinks.add(data.links[i].target);
+    }
+    usersWithLinks = Array.from(usersWithLinks);
+
+    var nodesWithLinks = [];
+    for (i = 0; i < usersWithLinks.length; i++){
+        nodesWithLinks.push({"name": usersWithLinks[i]});
+    }
+
+    data.nodes = nodesWithLinks;
+
 
     var svg = d3.select("svg")
         // allows pan (click and drag) and zoom (mouse scroll)
