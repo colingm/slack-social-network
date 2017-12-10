@@ -24,7 +24,6 @@ window.addEventListener('resize', function () {
 export class GraphRouter extends Component {
   renderGraph = ({match}) => {
     const { server } = this.props;
-    console.log(server);
     const graphs = server.graphs;
     if (match.params.graph in graphs) {
       return (<ViewGraph graph={server.graphs[match.params.graph]} domain={server.domain} />);
@@ -49,8 +48,8 @@ export class GraphRouter extends Component {
     }
   }
 
-  onCreateGraph = (graphName: string) => {
-    this.props.addGraph(graphName);
+  onCreateGraph = (graphName: string, type: string, channelID: string, mentions: string, users: string) => {
+    this.props.addGraph(graphName, type, channelID, mentions, users);
     this.props.selectGraph(graphName);
   }
 
@@ -61,7 +60,7 @@ export class GraphRouter extends Component {
       <Switch>
         <Route path={serverLink+"/graphs/:graph"} render={this.renderGraph} />
         <Route path={serverLink+"/addGraph"} render={() => (
-          <AddGraph onCreate={this.onCreateGraph} />
+          <AddGraph onCreate={this.onCreateGraph} domain={this.props.server.domain}/>
         )} />
         <Route render={this.defaultRender} />
       </Switch>
@@ -84,10 +83,27 @@ class ForceGraph extends Component {
     this.forceUpdate();
   }
 
-  componentDidMount = () => {
-    this.setState({ isLoading: true });
+  componentWillReceiveProps = (nextProps) => {
+    this.props = nextProps;
+    this.reloadData();
+  }
 
+  componentDidMount = () => {
     window.addEventListener('resizeend', this.resize);
+
+    this.reloadData();
+  }
+
+  componentWillUnmount = () => {
+    window.addEventListener('resizeend', this.resize);
+  }
+
+  componentDidUpdate = () => {
+    this.createForceGraph(this.state.data);
+  }
+
+  reloadData = () => {
+    this.setState({ isLoading: true });
 
     let domain = this.props.domain;
     let channelID = this.props.channelID;
@@ -119,15 +135,7 @@ class ForceGraph extends Component {
       this.createForceGraph(data);
       this.setState({ data, isLoading: false });
     })
-    .catch((error) => this.setState({ error, isLoading: false }))
-  }
-
-  componentWillUnmount = () => {
-    window.addEventListener('resizeend', this.resize);
-  }
-
-  componentDidUpdate = () => {
-    this.createForceGraph(this.state.data);
+    .catch((error) => this.setState({ error, isLoading: false }));
   }
 
   createForceGraph = (data) => {
@@ -301,9 +309,7 @@ class ForceGraph extends Component {
 
     if (error) {
       return <p ref={node => this.node = node}>{error.message}</p>;
-    }
-
-    if (isLoading) {
+    } else if (isLoading) {
       return <p ref={node => this.node = node}>Loading...</p>;
     }
 
@@ -317,17 +323,11 @@ class ForceGraph extends Component {
 export class ViewGraph extends Component {
   render = () => {
 
-    //TODO: REPLACE WITH ACTUAL DOMAIN, CHANNEL, AND THRESHOLD
-    const { graph } = this.props;
-      // const { graph, domain } = this.props;
-      // const type = graph.type;
-      // const channelID = graph.channelID;
-      // const threshold = graph.mentions;
-      // const userLimit = graph.users;
-    let domain = "deepstream";
-    let channelID = "C0G7QPGKS";
-    let threshold = "5";
-    console.log(domain, channelID, threshold);
+    const { graph, domain } = this.props;
+    const type = graph.type;
+    const channelID = graph.channelID;
+    const threshold = graph.mentions;
+    const userLimit = graph.users;
     return (
       <div className={styles.fullHeight}>
         <div className={styles.fullHeight}>
@@ -345,12 +345,38 @@ export class ViewGraph extends Component {
 }
 
 class AddGraph extends Component {
-  state = {
-    name: "",
-    type: "mentions",
-    channel: "",
-    mentions: "",
-    users: ""
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      name: "",
+      type: "mentions",
+      channel: "",
+      mentions: "",
+      users: "",
+      channels: [],
+      isLoading: false,
+      error: null
+    };
+  }
+
+  componentDidMount = () => {
+    this.setState({isLoading: true});
+
+    let domain = this.props.domain;
+    let url = `${API_URL}/${domain}/channels`;
+    fetch(url)
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Something went wrong...');
+      }
+    })
+    .then((channels) => {
+      this.setState({ channels, isLoading: false });
+    })
+    .catch((error) => this.setState({ error, isLoading: false }))
   }
 
   handleNameChange = (e) => {
@@ -375,19 +401,37 @@ class AddGraph extends Component {
 
   handleClick = (e) => {
     const { name, type, channel, mentions, users } = this.state;
+
     this.setState({
       name: "",
       type: "mentions",
       channel: "",
       mentions: "",
-      users: ""
+      users: "",
+      channels: [],
+      isLoading: false,
+      error: null
     });
+
     this.props.onCreate(name, type, channel, mentions, users);
   }
 
   render = () => {
-    const { handleClick, handleNameChange, handleTypeSelect, handleMentionsChange,  handleUserCountChange } = this;
-    let { name, type, channel, mentions, users } = this.state;
+    const { handleClick, handleNameChange, handleTypeSelect, handleMentionsChange,  handleUserCountChange, handleChannelSelect } = this;
+    let { name, type, channel, mentions, users, channels, isLoading, error } = this.state;
+
+    let channelPrompt = "Loading channels...";
+    if (error) {
+      channelPrompt = error.message;
+    } else if (!isLoading) {
+      channelPrompt = "Select a Channel";
+    }
+    let channelSelect = channels.map((item) => {
+      return (
+        <option key={item.channelID} value={item.channelID}>{item.name}</option>
+      );
+    });
+
     return (
       <div>
         <input type="text" className="form-control" onChange={handleNameChange} placeholder="Graph Name" value={name} />
@@ -399,8 +443,9 @@ class AddGraph extends Component {
           this.state.type == "mentions" ?
           <div>
             {/* TODO: FILL IN SELECT WITH CHANNELS */}
-            <select className="form-control">
-
+            <select className="form-control" defaultValue="" onChange={handleChannelSelect}>
+              <option value="" disabled>{channelPrompt}</option>
+              {channelSelect}
             </select>
             <input className="form-control" onChange={handleMentionsChange} placeholder="Minimum Mentions" value={mentions}/>
           </div> : null

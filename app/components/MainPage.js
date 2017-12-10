@@ -122,7 +122,6 @@ class LoadingBar extends Component {
       borderRadius: "5px"
     };
 
-    console.log(innerWidth);
     let innerStyle = {
       height: height+"px",
       width: innerWidth.toFixed(0)+"px",
