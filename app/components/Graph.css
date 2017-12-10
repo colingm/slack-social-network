@@ -16,7 +16,7 @@
 
 .graphNavLinkActive {
   color: white;
-  filter: brightness(80%);
+  filter: brightness(60%);
 }
 
 .graphNavAdd {
@@ -38,4 +38,10 @@
 .svg {
   height: 85vh;
   width: 100%;
+}
+
+.graphName {
+  display: inline-block;
+  width: 260px;
+  margin-right: 12px;
 }

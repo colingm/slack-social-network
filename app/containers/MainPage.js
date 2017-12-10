@@ -30,6 +30,7 @@ function mapStateToProps(state) {
     let id = Object.keys(state.servers)[i];
     let s_id = state.servers[id].id;
     let s_name = state.servers_list[s_id].name;
+    let s_domain = state.servers_list[s_id].domain;
     let s_icon = state.servers_list[s_id].icon;
     if (Object.keys(s_icon).length == 0) {
       s_icon = DEFAULT_ICON;
@@ -41,8 +42,9 @@ function mapStateToProps(state) {
       id: s_id,
       icon: s_icon,
       name: s_name,
-      isLoaded: state.servers_list[s_id].ready,
-      progress: state.servers_list[s_id].progress,
+      domain: s_domain,
+      isLoaded: state.servers[id].ready,
+      progress: state.servers[id].progress,
       graphs: state.servers[id].graphs
     };
   }
@@ -57,4 +59,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(actionProps, dispatch);
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MainPage));
+export default withRouter(connect(mapStateToProps)(MainPage));

@@ -2,6 +2,10 @@
   display: flex;
 }
 
+.draggable {
+    -webkit-app-region: drag;
+}
+
 #sidebar {
     display: block;
     float: left;
@@ -100,4 +104,14 @@
   padding-right: 15px;
   margin-left: auto;
   margin-right: auto;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h6 {
+  filter: brightness(60%);
 }

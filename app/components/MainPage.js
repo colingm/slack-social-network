@@ -7,6 +7,8 @@ import { GraphList } from './Graph.js'
 import uuid from 'uuid/v4';
 import styles from './MainPage.css';
 import Autocomplete from 'react-autocomplete';
+import { addServer, loadServerProgressIfNeeded } from '../actions/servers.js'
+import loading from '../static/loading.gif';
 
 class AddServer extends Component {
   state = {
@@ -45,7 +47,7 @@ class AddServer extends Component {
     let { selected, value } = this.state;
     const { serversList } = this.props;
     return (
-      <div>
+      <div className={styles.draggable}>
         <div id={styles.topbar} className="row">
           <h2>Add Server</h2>
         </div>
@@ -65,6 +67,15 @@ class AddServer extends Component {
             inputProps={{
               className: "form-control",
               placeholder: "Team name"
+            }}
+            menuStyle={{
+              padding: "4px",
+              margin: "4px"
+            }}
+            wrapperStyle={{
+              "marginRight": "12px",
+              display: "inline-block",
+              width: "260px"
             }}
             value={value}
             onChange={handleChange}
@@ -95,10 +106,43 @@ class AddServerButton extends Component {
   }
 }
 
+class LoadingBar extends Component {
+  render = () => {
+    const height = 10;
+    const width = 40;
+    let innerWidth = width * (this.props.percent / 100.0);
+
+    let outerStyle = {
+      position: "absolute",
+      top: "25px",
+      left: "10px",
+      height: height+"px",
+      width: width+"px",
+      backgroundColor: "grey",
+      borderRadius: "5px"
+    };
+
+    let innerStyle = {
+      height: height+"px",
+      width: innerWidth.toFixed(0)+"px",
+      backgroundColor: "inherit",
+      filter: "brightness(120%)",
+      borderRadius: "5px"
+    };
+
+    return (
+      <div style={outerStyle}>
+        <div style={innerStyle}>
+        </div>
+      </div>
+    );
+  }
+}
+
 class ViewServerButton extends Component {
   render = () => {
-    const { id, icon, isLoaded, progress } = this.props;
-    if (isLoaded) {
+    const { id, icon, progress } = this.props;
+    if (progress == 100) {
       return (
         <div className={styles.serverButtonContainer}>
           <NavLink to={"/main/servers/"+id} activeClassName={styles.navLinkSelected}>
@@ -110,7 +154,8 @@ class ViewServerButton extends Component {
       return (
         <div className={styles.serverButtonContainer}>
           <NavLink to={"/main/servers/"+id} activeClassName={styles.navLinkSelected}>
-            {progress}
+            <img src={icon} className={styles.serverButton} />
+            <LoadingBar percent={progress} />
           </NavLink>
         </div>
       );
@@ -120,13 +165,13 @@ class ViewServerButton extends Component {
 
 class Sidebar extends Component {
   render = () => {
-    const { servers } = this.props;
+    const { servers, updateProgress } = this.props;
     let buttons = []
     for (let id in servers) {
       let server = servers[id];
       buttons.push(<ViewServerButton
                     key={uuid()} id={server.id}
-                    icon={server.icon} isLoaded={server.isLoaded} 
+                    icon={server.icon}
                     progress={server.progress} />);
     }
     return (
@@ -144,30 +189,65 @@ class Sidebar extends Component {
 class ViewServer extends Component {
   render = () => {
     const { server } = this.props;
-    return (
-      <span>
-        <div id={styles.topbar} className="row">
-          <div className="container-fluid">
-            <div id={styles.draggable} className="row">
-              <h2>{server.name}</h2>
-            </div>
-            <div className="row">
-              <GraphList server={server} />
+    if (server.progress == 100) {
+      return (
+        <span className={styles.draggable}>
+          <div id={styles.topbar} className="row">
+            <div className="container-fluid">
+              <div id={styles.draggable} className="row">
+                <h2>{server.name}</h2>
+              </div>
+              <div className="row">
+                <GraphList server={server} />
+              </div>
             </div>
           </div>
-        </div>
-        <div id={styles.content} className="row">
-          <GraphRouter server={server} />
-        </div>
-      </span>
-    )
+          <div id={styles.content} className="row">
+            <GraphRouter server={server} />
+          </div>
+        </span>
+      )
+    } else {
+      return (
+        <span>
+          <div id={styles.topbar} className="row">
+            <div className="container-fluid">
+              <div id={styles.draggable} className="row">
+                <h2>{server.name}</h2>
+              </div>
+              <div className="row">
+                <h6>Hang tight, we're grabbing all that data for you...</h6>
+              </div>
+            </div>
+          </div>
+          <div id={styles.content} className={"row "+styles.loadingContainer}>
+            <img className={styles.loading} src={loading} />
+          </div>
+        </span>
+      );
+    }
   }
 }
 
 class MainPage extends Component {
+  componentWillMount = () => {
+    const { servers } = this.props;
+
+    for (let serverId in servers) {
+      this.props.dispatch(loadServerProgressIfNeeded(serverId));
+    }
+  }
+
+  componentDidUpdate = () => {
+    const { servers } = this.props;
+
+    for (let serverId in servers) {
+      this.props.dispatch(loadServerProgressIfNeeded(serverId));
+    }
+  }
+
   onCreateServer = (name: number) => {
-    this.props.addServer(name);
-    this.props.selectServer(name);
+    this.props.dispatch(addServer(name));
   }
 
   renderDefaultRoute = () => {
@@ -186,8 +266,6 @@ class MainPage extends Component {
 
   renderServer = ({match}) => {
     const { servers } = this.props;
-    console.log(match.params.server);
-    console.log(servers);
     if (match.params.server in servers) {
       return (<ViewServer server={servers[match.params.server]} />);
     } else {
@@ -197,6 +275,7 @@ class MainPage extends Component {
 
   render = () => {
     const { servers, serversList } = this.props;
+
     return (
       <div className={styles.wrapper}>
         <nav id={styles.sidebar}>
