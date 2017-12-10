@@ -313,31 +313,6 @@ class ForceGraph extends Component {
 
 }
 
-var force_graph_data = {
-  "nodes": [
-    {"id": "Abe"},
-    {"id": "Bob"},
-    {"id": "Conrad"},
-    {"id": "Don"},
-    {"id": "Eric"},
-    {"id": "Faith"},
-    {"id": "Garret"},
-    {"id": "Hilbert"},
-    {"id": "Ivan"}
-  ],
-  "links": [
-    {"source": "Abe", "target": "Bob", "mentions": 7},
-    {"source": "Abe", "target": "Ivan", "mentions": 9},
-    {"source": "Abe", "target": "Conrad", "mentions": 100},
-    {"source": "Abe", "target": "Don", "mentions": 60},
-    {"source": "Don", "target": "Conrad", "mentions": 1},
-    {"source": "Don", "target": "Eric", "mentions": 7},
-    {"source": "Eric", "target": "Faith", "mentions": 55},
-    {"source": "Eric", "target": "Garret", "mentions": 16},
-    {"source": "Eric", "target": "Hilbert", "mentions": 82}
-  ]
-};
-
 export class ViewGraph extends Component {
   render = () => {
     const { graph } = this.props;
