@@ -2,6 +2,10 @@
   display: flex;
 }
 
+.draggable {
+    -webkit-app-region: drag;
+}
+
 #sidebar {
     display: block;
     float: left;

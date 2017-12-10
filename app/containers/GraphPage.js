@@ -30,11 +30,15 @@ function mapStateToProps(state, {server}) {
 
 function mapDispatchToProps(dispatch, {server}) {
   return {
-    addGraph: (graphName: string) => {
+    addGraph: (graphName: string, type: string, channelID: string, mentions: string, users: string) => {
       dispatch({
         type: actions.ADD_GRAPH,
         serverId: server.id,
-        graphName: graphName
+        graphName,
+        type,
+        channelID,
+        mentions,
+        users
       });
     },
     selectGraph: (graphName: string) => {

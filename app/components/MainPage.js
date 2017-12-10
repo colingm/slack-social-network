@@ -47,7 +47,7 @@ class AddServer extends Component {
     let { selected, value } = this.state;
     const { serversList } = this.props;
     return (
-      <div>
+      <div className={styles.draggable}>
         <div id={styles.topbar} className="row">
           <h2>Add Server</h2>
         </div>
@@ -67,6 +67,15 @@ class AddServer extends Component {
             inputProps={{
               className: "form-control",
               placeholder: "Team name"
+            }}
+            menuStyle={{
+              padding: "4px",
+              margin: "4px"
+            }}
+            wrapperStyle={{
+              "marginRight": "12px",
+              display: "inline-block",
+              width: "260px"
             }}
             value={value}
             onChange={handleChange}
@@ -163,7 +172,7 @@ class Sidebar extends Component {
       let server = servers[id];
       buttons.push(<ViewServerButton
                     key={uuid()} id={server.id}
-                    icon={server.icon} 
+                    icon={server.icon}
                     progress={server.progress} />);
     }
     return (
@@ -183,7 +192,7 @@ class ViewServer extends Component {
     const { server } = this.props;
     if (server.progress == 100) {
       return (
-        <span>
+        <span className={styles.draggable}>
           <div id={styles.topbar} className="row">
             <div className="container-fluid">
               <div id={styles.draggable} className="row">

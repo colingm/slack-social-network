@@ -24,9 +24,10 @@ window.addEventListener('resize', function () {
 export class GraphRouter extends Component {
   renderGraph = ({match}) => {
     const { server } = this.props;
+    console.log(server);
     const graphs = server.graphs;
     if (match.params.graph in graphs) {
-      return (<ViewGraph graph={server.graphs[match.params.graph]} />);
+      return (<ViewGraph graph={server.graphs[match.params.graph]} domain={server.domain} />);
     } else {
       return (<Redirect to={"/main/servers/"+server.id+"/graphs"} />);
     }
@@ -315,17 +316,27 @@ class ForceGraph extends Component {
 
 export class ViewGraph extends Component {
   render = () => {
-    const { graph } = this.props;
 
     //TODO: REPLACE WITH ACTUAL DOMAIN, CHANNEL, AND THRESHOLD
+    const { graph } = this.props;
+      // const { graph, domain } = this.props;
+      // const type = graph.type;
+      // const channelID = graph.channelID;
+      // const threshold = graph.mentions;
+      // const userLimit = graph.users;
     let domain = "deepstream";
     let channelID = "C0G7QPGKS";
     let threshold = "5";
-
+    console.log(domain, channelID, threshold);
     return (
       <div className={styles.fullHeight}>
-        Viewing: {graph.name}
         <div className={styles.fullHeight}>
+          {/* {
+            type == 'mentions' ? <ForceGraph domain={domain} channelID={channelID} threshold={threshold}/> : null
+          }
+          {
+            type == 'channels' ? <ConceptMap domain={domain} limit={userLimit} /> : null
+          } */}
           <ForceGraph domain={domain} channelID={channelID} threshold={threshold}/>
         </div>
       </div>
@@ -335,25 +346,69 @@ export class ViewGraph extends Component {
 
 class AddGraph extends Component {
   state = {
-    value: ""
-  };
+    name: "",
+    type: "mentions",
+    channel: "",
+    mentions: "",
+    users: ""
+  }
 
-  handleChange = (e) => {
-    this.setState({value: e.target.value});
-  };
+  handleNameChange = (e) => {
+    this.setState({name: e.target.value});
+  }
+
+  handleMentionsChange = (e) => {
+    this.setState({mentions: e.target.value});
+  }
+
+  handleUserCountChange = (e) => {
+    this.setState({users: e.target.value});
+  }
+
+  handleTypeSelect = (e) => {
+    this.setState({type: e.target.value});
+  }
+
+  handleChannelSelect = (e) => {
+    this.setState({channel: e.target.value});
+  }
 
   handleClick = (e) => {
-    const value = this.state.value;
-    this.setState({value: ""});
-    this.props.onCreate(value);
+    const { name, type, channel, mentions, users } = this.state;
+    this.setState({
+      name: "",
+      type: "mentions",
+      channel: "",
+      mentions: "",
+      users: ""
+    });
+    this.props.onCreate(name, type, channel, mentions, users);
   }
 
   render = () => {
-    const { handleClick, handleChange } = this;
-    let { value } = this.state;
+    const { handleClick, handleNameChange, handleTypeSelect, handleMentionsChange,  handleUserCountChange } = this;
+    let { name, type, channel, mentions, users } = this.state;
     return (
       <div>
-        <input type="text" className="form-control" onChange={handleChange} placeholder="Graph Name" value={value} />
+        <input type="text" className="form-control" onChange={handleNameChange} placeholder="Graph Name" value={name} />
+        <select className="form-control" onChange={handleTypeSelect}>
+          <option value="mentions">User Mentions</option>
+          <option value="channels">Channel Subscriptions</option>
+        </select>
+        {
+          this.state.type == "mentions" ?
+          <div>
+            {/* TODO: FILL IN SELECT WITH CHANNELS */}
+            <select className="form-control">
+
+            </select>
+            <input className="form-control" onChange={handleMentionsChange} placeholder="Minimum Mentions" value={mentions}/>
+          </div> : null
+        }
+        {
+          this.state.type == "channels" ?
+          <input className="form-control" onChange={handleUserCountChange} placeholder="User Count" value={users}/> : null
+        }
         <button className="btn btn-primary" onClick={handleClick}>Add</button>
       </div>
     )

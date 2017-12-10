@@ -118,7 +118,11 @@ export function servers(state = {}, action: {type: string}) {
     case actions.ADD_GRAPH: {
       let new_state = deepCopy(state);
       new_state[action.serverId].graphs[action.graphName] = {
-        name : action.graphName
+        name : action.graphName,
+        type: action.type,
+        channelID: action.channelID,
+        mentions: action.mentions,
+        users: action.users
       }
       storage.set('servers', new_state);
       return new_state;
