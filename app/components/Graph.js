@@ -158,17 +158,33 @@ class ForceGraph extends Component {
     var focusNode = null,
         highlightNode = null;
 
-    var svg = d3.select(me);
+    var svg = d3.select(me)
+      .call(d3.zoom().on("zoom", () => { svg.attr("transform", d3.event.transform); }))
+      .append("g");
     let width = me.clientWidth;
     let height = me.clientHeight;
 
     var linkedByIndex = {};
     data.links.forEach(function(d) {
-      linkedByIndex[d.source + "," + d.target] = true;
+      if (d.source instanceof String) {
+        linkedByIndex[d.source + "," + d.target] = true;
+      } else {
+        linkedByIndex[d.source.id + "," + d.target.id] = true;
+      }
     });
+    console.log(linkedByIndex);
 
-    function isConnected(a, b) {
-      return linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || a.index == b.index;
+    function isConnected(a, b, type) {
+
+      let result = linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || ((type == "text" || type == "node") && a.index == b.index)
+        ||  linkedByIndex[a.id + "," + b.id] || linkedByIndex[b.id + "," + a.id]
+        || (b.source && b.target.id == a.id && (linkedByIndex[a.id + "," + b.source.id] || linkedByIndex[b.source.id + "," + a.id]))
+        || (b.target && b.source.id == a.id && (linkedByIndex[a.id + "," + b.target.id] || linkedByIndex[b.target.id + "," + a.id]));
+
+      if (result) {
+        console.log(type, a, b, linkedByIndex);
+      }
+      return result;
     }
 
     svg.selectAll("*").remove();
@@ -183,7 +199,7 @@ class ForceGraph extends Component {
       .enter().append("line")
       .attr("class", d3_styles.link)
       .style("stroke", defaultLinkColor)
-      .attr("stroke-width", function(d) { return Math.sqrt(d.mentions); });
+      .attr("stroke-width", (d) => Math.sqrt(d.mentions));
 
     var node = svg.append("g")
       .attr("class", d3_styles.nodes)
@@ -191,7 +207,7 @@ class ForceGraph extends Component {
       .data(data.nodes) //statements past here executed once per data point
       .enter() //creates and hands off placeholder element
       .append("circle") // adds circle to placeholder element received from enter()
-      .attr("r", (d) => (d.relations * 1.5) + 8)
+      .attr("r", (d) => (Math.sqrt(d.relations) * 7) + 5)
       .attr("fill", "orange")
       .call(d3.drag()
         .on("start", dragstarted)
@@ -206,15 +222,27 @@ class ForceGraph extends Component {
     var text = svg.selectAll(".text")
       .data(data.nodes)
       .enter().append("text")
+      .text((d) => d.id)
+      .style("text-anchor", "middle")
+      .style("fill", "black")
+      .style("font-family", "Arial")
       .attr("dy", ".35em")
-  	  .style("font-size", nominalTextSize + "px")
+  	  .style("font-size", nominalTextSize + "px");
+
+    var mentions = svg.append("g").selectAll("g")
+      .data(data.links)
+      .enter().append("g")
+      .append("text")
+      .style("text-anchor", "middle")
+      .style("fill", "black")
+      .style("font-family", "Arial")
+      .style("font-size", 12)
+      .attr("dy", ".35em")
+      .text(function(d) { return d.mentions; });
 
     node
       .on("mouseover", (d) => setHighlight(d) )
       .on("mouseout", (d) => exitHighlight(d) );
-
-    node.append("title")
-      .text(function(d) { return d.id; });
 
     simulation
       .nodes(data.nodes)
@@ -245,9 +273,10 @@ class ForceGraph extends Component {
       if (focusNode !== null) {
         focusNode = null;
         if (highlightTrans < 1) {
-          circle.style("opacity", 1);
+          node.style("opacity", 1);
           text.style("opacity", 1);
           link.style("opacity", 1);
+          mentions.style("opacity", 1);
         }
       }
 
@@ -256,8 +285,9 @@ class ForceGraph extends Component {
 
     function setFocus(d) {
       if (highlightTrans < 1) {
-        circle.style("opacity", (o) => isConnected(d, o) ? 1 : highlightTrans );
-        text.style("opacity", (o) =>  isConnected(d, o) ? 1 : highlightTrans );
+        node.style("opacity", (o) => isConnected(d, o, "node") ? 1 : highlightTrans );
+        text.style("opacity", (o) =>  isConnected(d, o, "text") ? 1 : highlightTrans );
+        mentions.style("opacity", (o) =>  isConnected(d, o, "mentions") ? 1 : highlightTrans );
         link.style("opacity", (o) => o.source.index == d.index || o.target.index == d.index ? 1 : highlightTrans );
       }
     }
@@ -271,8 +301,9 @@ class ForceGraph extends Component {
       highlightNode = d;
 
     	if (highlightColor != "white") {
-  		  circle.style(toWhite, (o) => isConnected(d, o) ? highlightColor : "white" );
-  			text.style("font-weight", (o) => isConnected(d, o) ? "bold" : "normal" );
+  		  node.style(toWhite, (o) => isConnected(d, o, "node") ? highlightColor : "white" );
+  			text.style("font-weight", (o) => isConnected(d, o, "text") ? "bold" : "normal" );
+        mentions.style("font-weight", (o) => isConnected(d, o, "mentions") ? "bold" : "normal");
         link.style("stroke", (o) => (o.source.index == d.index || o.target.index == d.index)
           ? highlightColor
           : defaultLinkColor );
@@ -284,8 +315,9 @@ class ForceGraph extends Component {
     	if (focusNode === null) {
     		svg.style("cursor", "move");
     		if (highlightColor != "white") {
-      	  circle.style(toWhite, "white");
+      	  node.style(toWhite, "white");
       	  text.style("font-weight", "normal");
+      	  mentions.style("font-weight", "normal");
       	  link.style("stroke", (o) => defaultLinkColor );
         }
     	}
@@ -301,6 +333,15 @@ class ForceGraph extends Component {
       node
         .attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
+
+      text
+        // set node label positioning such that ids float above the circles
+        .attr("x", function(d){ return d.x; })
+        .attr("y", function (d) {return d.y-12; });
+
+      mentions
+        .attr("x", function(d){ return (d.source.x + d.target.x)/2; })
+        .attr("y", function (d) {return (d.source.y + d.target.y)/2; });
     }
   }
 
