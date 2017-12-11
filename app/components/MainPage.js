@@ -47,9 +47,11 @@ class AddServer extends Component {
     let { selected, value } = this.state;
     const { serversList } = this.props;
     return (
-      <div className={styles.draggable}>
+      <div>
         <div id={styles.topbar} className="row">
-          <h2>Add Server</h2>
+          <div id={styles.draggable}>
+            <h2>Add Server</h2>
+          </div>
         </div>
         <div id={styles.content} className="row">
           <Autocomplete
@@ -191,7 +193,7 @@ class ViewServer extends Component {
     const { server } = this.props;
     if (server.progress == 100) {
       return (
-        <span className={styles.draggable}>
+        <span>
           <div id={styles.topbar} className="row">
             <div className="container-fluid">
               <div id={styles.draggable} className="row">
