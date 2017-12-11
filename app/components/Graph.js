@@ -108,34 +108,80 @@ class ForceGraph extends Component {
     let domain = this.props.domain;
     let channelID = this.props.channelID;
     let threshold = this.props.threshold;
-    let url = `${API_URL}/${domain}/channels/${channelID}/mentions?threshold=${threshold}`;
-    fetch(url)
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new Error('Something went wrong...');
-      }
-    })
-    .then((data) => {
-      let links = [];
-      let nodes = {};
-      for (let rel of data) {
-        if (!nodes[rel.user1]) {
-          nodes[rel.user1] = {id: rel.user1, relations: 0};
+    let limit = this.props.limit;
+    let type = this.props.graphType;
+    if (type == "mentions") {
+      let url = `${API_URL}/${domain}/channels/${channelID}/mentions?threshold=${threshold}`;
+      fetch(url)
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Something went wrong...');
         }
-        if (!nodes[rel.user2]) {
-          nodes[rel.user2] = {id: rel.user2, relations: 0};
+      })
+      .then((data) => {
+        let links = [];
+        let nodes = {};
+        for (let rel of data) {
+          if (!nodes[rel.user1]) {
+            nodes[rel.user1] = {id: rel.user1, relations: 0};
+          }
+          if (!nodes[rel.user2]) {
+            nodes[rel.user2] = {id: rel.user2, relations: 0};
+          }
+          nodes[rel.user1].relations++;
+          nodes[rel.user2].relations++;
+          links.push({source: rel.user1, target: rel.user2, mentions: rel.mentions});
         }
-        nodes[rel.user1].relations++;
-        nodes[rel.user2].relations++;
-        links.push({source: rel.user1, target: rel.user2, mentions: rel.mentions});
-      }
-      data = {nodes: Object.values(nodes), links: links};
-      this.createForceGraph(data);
-      this.setState({ data, isLoading: false });
-    })
-    .catch((error) => this.setState({ error, isLoading: false }));
+        data = {nodes: Object.values(nodes), links: links};
+        this.createForceGraph(data);
+        this.setState({ data, isLoading: false });
+      })
+      .catch((error) => this.setState({ error, isLoading: false }));
+    } else {
+      let url = `${API_URL}/${domain}/users?limit=${limit}`;
+      fetch(url)
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Something went wrong...');
+        }
+      })
+      .then((users) => {
+        url = `${API_URL}/${domain}/channels`;
+        fetch(url)
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Something went wrong...');
+          }
+        })
+        .then((channels) => {
+          let links = [];
+          let nodes = {};
+          for (let channel of channels) {
+            nodes[channel.channelID] = {id: channel.channelID, name: channel.name, relations: 0, type: 'channel'};
+          }
+
+          for (let user of users) {
+            nodes[user.name] = {id: user.name, relations: 1};
+            for (let channel of user.channels) {
+              links.push({source: channel, target: user.name});
+              nodes[channel].relations++;
+            }
+          }
+
+          let data = {nodes: Object.values(nodes), links};
+          this.createForceGraph(data);
+          this.setState({data, isLoading: false});
+        });
+      })
+      .catch((error) => this.setState({ error, isLoading: false }));
+    }
+
   }
 
   createForceGraph = (data) => {
@@ -172,7 +218,6 @@ class ForceGraph extends Component {
         linkedByIndex[d.source.id + "," + d.target.id] = true;
       }
     });
-    console.log(linkedByIndex);
 
     function isConnected(a, b, type) {
 
@@ -181,9 +226,6 @@ class ForceGraph extends Component {
         || (b.source && b.target.id == a.id && (linkedByIndex[a.id + "," + b.source.id] || linkedByIndex[b.source.id + "," + a.id]))
         || (b.target && b.source.id == a.id && (linkedByIndex[a.id + "," + b.target.id] || linkedByIndex[b.target.id + "," + a.id]));
 
-      if (result) {
-        console.log(type, a, b, linkedByIndex);
-      }
       return result;
     }
 
@@ -199,7 +241,7 @@ class ForceGraph extends Component {
       .enter().append("line")
       .attr("class", d3_styles.link)
       .style("stroke", defaultLinkColor)
-      .attr("stroke-width", (d) => Math.sqrt(d.mentions));
+      .attr("stroke-width", (d) => d.mentions ? Math.sqrt(d.mentions) : 2);
 
     var node = svg.append("g")
       .attr("class", d3_styles.nodes)
@@ -208,7 +250,7 @@ class ForceGraph extends Component {
       .enter() //creates and hands off placeholder element
       .append("circle") // adds circle to placeholder element received from enter()
       .attr("r", (d) => (Math.sqrt(d.relations) * 7) + 5)
-      .attr("fill", "orange")
+      .attr("fill", (d) => d.type == 'channel' ? "cyan" : "orange")
       .call(d3.drag()
         .on("start", dragstarted)
         .on("drag", dragged)
@@ -222,7 +264,7 @@ class ForceGraph extends Component {
     var text = svg.selectAll(".text")
       .data(data.nodes)
       .enter().append("text")
-      .text((d) => d.id)
+      .text((d) => d.name ? d.name + ' (' + d.relations + ' users)': d.id)
       .style("text-anchor", "middle")
       .style("fill", "black")
       .style("font-family", "Arial")
@@ -372,13 +414,13 @@ export class ViewGraph extends Component {
     return (
       <div className={styles.fullHeight}>
         <div className={styles.fullHeight}>
-          {/* {
-            type == 'mentions' ? <ForceGraph domain={domain} channelID={channelID} threshold={threshold}/> : null
+          {
+            type == 'mentions' ? <ForceGraph domain={domain} type="mentions" channelID={channelID} threshold={threshold}/> : null
           }
           {
-            type == 'channels' ? <ConceptMap domain={domain} limit={userLimit} /> : null
-          } */}
-          <ForceGraph domain={domain} channelID={channelID} threshold={threshold}/>
+            type == 'channels' ? <ForceGraph domain={domain} type="channels" limit={userLimit} /> : null
+          }
+          {/* <ForceGraph domain={domain} channelID={channelID} threshold={threshold}/> */}
         </div>
       </div>
     );
