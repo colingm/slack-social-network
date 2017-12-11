@@ -264,7 +264,7 @@ class ForceGraph extends Component {
     var text = svg.selectAll(".text")
       .data(data.nodes)
       .enter().append("text")
-      .text((d) => d.name ? d.name + ' (' + d.relations + ' users)': d.id)
+      .text((d) => d.name ? d.name : d.id)
       .style("text-anchor", "middle")
       .style("fill", "black")
       .style("font-family", "Arial")
