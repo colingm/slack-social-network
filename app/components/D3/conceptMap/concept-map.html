@@ -1,0 +1,486 @@
+<html>
+  <head>
+
+    <link href="lib/concept-map.css" rel="stylesheet"></link>
+
+    <script src="lib/jquery-2.1.3.min.js" type="text/javascript"></script>
+    <script src="lib/d3.min.js" type="text/javascript"></script>
+    <script src="lib/packages.js" type="text/javascript"></script>
+    <script src="lib/concept-map.js" type="text/javascript"></script>
+
+    <script>
+      var data = {
+        "users": [
+            {
+                "name": "User1",
+                "links": [
+                  "Channel3",
+                  "Channel4",
+                  "Channel5",
+                  "Channel6",
+                  "Channel8",
+                  "Channel9"
+                ]
+            },
+            {
+                "name": "User2",
+                "links": [
+                  "Channel6",
+                  "Channel8",
+                  "Channel10"
+                ]
+            },
+            {
+                "name": "User3",
+                "links": [
+                  "Channel1",
+                  "Channel5",
+                  "Channel6",
+                  "Channel8",
+                  "Channel10"
+                ]
+            },
+            {
+                "name": "User4",
+                "links": [
+                  "Channel5",
+                  "Channel6",
+                  "Channel7",
+                  "Channel8",
+                  "Channel10"
+                ]
+            },
+            {
+                "name": "User5",
+                "links": [
+                  "Channel5",
+                  "Channel6",
+                  "Channel7",
+                  "Channel10",
+                  "Channel11"
+                ]
+            },
+            {
+                "name": "User6",
+                "links": [
+                  "Channel1",
+                  "Channel4",
+                  "Channel5",
+                  "Channel6",
+                  "Channel8",
+                  "Channel11"
+                ]
+            },
+            {
+                "name": "User7",
+                "links": [
+                  "Channel4",
+                  "Channel6",
+                  "Channel8",
+                  "Channel10"
+                ]
+            },
+            {
+                "name": "User8",
+                "links": [
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User9",
+                "links": [
+                  "Channel4",
+                  "Channel5",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User10",
+                "links": [
+                  "Channel5",
+                  "Channel7",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User11",
+                "links": [
+                  "Channel5",
+                  "Channel6",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User12",
+                "links": [
+                  "Channel10",
+                  "Channel12"
+                ]
+            },
+            {
+                "name": "User13",
+                "links": [
+                  "Channel1",
+                  "Channel4",
+                  "Channel5",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User14",
+                "links": [
+                  "Channel5",
+                  "Channel6",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User15",
+                "links": [
+                  "Channel3",
+                  "Channel4",
+                  "Channel5",
+                  "Channel6",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User16",
+                "links": [
+                  "Channel4",
+                  "Channel5",
+                  "Channel6",
+                  "Channel8",
+                  "Channel9",
+                  "Channel11"
+                ]
+            },
+            {
+                "name": "User17",
+                "links": [
+                  "Channel4",
+                  "Channel6",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User18",
+                "links": [
+                  "Channel6",
+                  "Channel8",
+                  "Channel10"
+                ]
+            },
+            {
+                "name": "User19",
+                "links": [
+                  "Channel3",
+                  "Channel8",
+                  "Channel12"
+                ]
+            },
+            {
+                "name": "User20",
+                "links": [
+                  "Channel1",
+                  "Channel4",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User21",
+                "links": [
+                  "Channel5",
+                  "Channel8",
+                  "Channel11"
+                ]
+            },
+            {
+                "name": "User22",
+                "links": [
+                  "Channel1",
+                  "Channel2",
+                  "Channel8",
+                  "Channel9"
+                ]
+            },
+            {
+                "name": "User23",
+                "links": [
+                  "Channel3",
+                  "Channel5",
+                  "Channel10",
+                  "Channel11"
+                ]
+            },
+            {
+                "name": "User24",
+                "links": [
+                  "Channel1",
+                  "Channel3",
+                  "Channel5",
+                  "Channel6",
+                  "Channel8",
+                  "Channel10"
+                ]
+            },
+            {
+                "name": "User25",
+                "links": [
+                  "Channel4",
+                  "Channel10",
+                  "Channel12"
+                ]
+            },
+            {
+                "name": "User26",
+                "links": [
+                  "Channel7",
+                  "Channel10"
+                ]
+            },
+            {
+                "name": "User27",
+                "links": [
+                  "Channel3",
+                  "Channel5",
+                  "Channel7",
+                  "Channel8",
+                  "Channel11"
+                ]
+            },
+            {
+                "name": "User28",
+                "links": [
+                  "Channel2",
+                  "Channel4",
+                  "Channel5"
+                ]
+            },
+            {
+                "name": "User29",
+                "links": [
+                  "Channel5",
+                  "Channel6",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User30",
+                "links": [
+                  "Channel4",
+                  "Channel5",
+                  "Channel6",
+                  "Channel7",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User31",
+                "links": [
+                  "Channel4",
+                  "Channel5",
+                  "Channel6",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User32",
+                "links": [
+                  "Channel5",
+                  "Channel7",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User33",
+                "links": [
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User34",
+                "links": [
+                  "Channel6"
+                ]
+            },
+            {
+                "name": "User35",
+                "links": [
+                  "Channel10",
+                  "Channel12"
+                ]
+            },
+            {
+                "name": "User36",
+                "links": [
+                  "Channel2",
+                  "Channel4",
+                  "Channel5",
+                  "Channel6",
+                  "Channel8",
+                  "Channel10"
+                ]
+            },
+            {
+                "name": "User37",
+                "links": [
+                  "Channel4",
+                  "Channel6",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User38",
+                "links": [
+                  "Channel5",
+                  "Channel6",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User39",
+                "links": [
+                  "Channel6"
+                ]
+            },
+            {
+                "name": "User40",
+                "links": [
+                  "Channel7",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User41",
+                "links": [
+                  "Channel12"
+                ]
+            },
+            {
+                "name": "User42",
+                "links": [
+                  "Channel5",
+                  "Channel6",
+                  "Channel7",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User43",
+                "links": [
+                  "Channel5",
+                  "Channel6"
+                ]
+            },
+            {
+                "name": "User44",
+                "links": [
+                  "Channel4",
+                  "Channel7"
+                ]
+            },
+            {
+                "name": "User45",
+                "links": [
+                  "Channel3",
+                  "Channel5",
+                  "Channel6",
+                  "Channel7",
+                  "Channel10",
+                  "Channel11"
+                ]
+            },
+            {
+                "name": "User46",
+                "links": [
+                  "Channel3",
+                  "Channel4",
+                  "Channel5",
+                  "Channel6"
+                ]
+            },
+            {
+                "name": "User47",
+                "links": [
+                  "Channel6",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User48",
+                "links": [
+                  "Channel3",
+                  "Channel6",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User49",
+                "links": [
+                  "Channel1",
+                  "Channel4",
+                  "Channel5",
+                  "Channel6",
+                  "Channel8"
+                ]
+            },
+            {
+                "name": "User50",
+                "links": [
+                  "Channel5",
+                  "Channel7",
+                  "Channel13"
+                ]
+            },
+        ],
+        "channels": [
+          "Channel1",
+          "Channel2",
+          "Channel3",
+          "Channel4",
+          "Channel5",
+          "Channel6",
+          "Channel7",
+          "Channel8",
+          "Channel9",
+          "Channel10",
+          "Channel11",
+          "Channel12",
+          "Channel13"
+        ]
+      };
+
+      data["leftNodes"] = [];
+      data["rightNodes"] = [];
+      for (i = 0; i < Math.round(data.channels.length/2); i++){
+        data.leftNodes.push({"type": "leftNode", "name": data.channels[i]});
+      }
+      for (i = Math.round(data.channels.length/2); i < data.channels.length; i++){
+        data.rightNodes.push({"type": "rightNode", "name": data.channels[i]});
+      }
+      for (i = 0; i < data.rightNodes.length/2; i++){
+        data.rightNodes[i+i]["group"] = i.toString();
+        data.rightNodes[i+i+1]["group"] = i.toString();
+      }
+      delete data.channels;
+
+      $(function(){
+        plotConceptMap();
+      });
+      function plotConceptMap()
+      {
+    		var plot = new ConceptMap("graph", "graph-info", data);
+      }
+    </script>
+    <style>
+      body{
+        padding-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+		<div id="graph" class="conceptmap" ></div>
+		<div id="graph-info"></div>
+  </body>
+</html>
