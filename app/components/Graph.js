@@ -80,7 +80,7 @@ class ForceGraph extends Component {
   }
 
   resize = () => {
-    this.forceUpdate();
+    // this.forceUpdate();
   }
 
   componentWillReceiveProps = (nextProps) => {
