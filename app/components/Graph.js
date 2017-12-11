@@ -194,7 +194,7 @@ class ForceGraph extends Component {
 
     var defaultNodeColor = "#ccc";
     var defaultLinkColor = "#aaaaaa";
-    var highlightColor = "blue";
+    var highlightColor = "pink";
     var highlightTrans = 0.1;
     var toWhite = "stroke";
 	  var toColor = "fill";
