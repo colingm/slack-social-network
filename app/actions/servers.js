@@ -67,7 +67,7 @@ function shouldLoadServerProgress(serverId, state) {
   );
 }
 
-const FORCE_REFRESH = true;
+const FORCE_REFRESH = false;
 
 export function loadServersListIfNeeded() {
   return (dispatch, getState) => {

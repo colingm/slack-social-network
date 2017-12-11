@@ -47,9 +47,9 @@ class AddServer extends Component {
     let { selected, value } = this.state;
     const { serversList } = this.props;
     return (
-      <div>
+      <div className={styles.draggable}>
         <div id={styles.topbar} className="row">
-          <div id={styles.draggable}>
+          <div>
             <h2>Add Server</h2>
           </div>
         </div>
@@ -77,7 +77,8 @@ class AddServer extends Component {
             wrapperStyle={{
               "marginRight": "12px",
               display: "inline-block",
-              width: "260px"
+              width: "100%",
+              marginBottom: "12px"
             }}
             value={value}
             onChange={handleChange}
@@ -193,7 +194,7 @@ class ViewServer extends Component {
     const { server } = this.props;
     if (server.progress == 100) {
       return (
-        <span>
+        <span className={styles.draggable}>
           <div id={styles.topbar} className="row">
             <div className="container-fluid">
               <div id={styles.draggable} className="row">

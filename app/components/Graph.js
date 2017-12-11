@@ -517,8 +517,8 @@ class AddGraph extends Component {
 
     return (
       <div>
-        <input type="text" className="form-control" onChange={handleNameChange} placeholder="Graph Name" value={name} />
-        <select className="form-control" onChange={handleTypeSelect}>
+        <input type="text" className={styles.mb3 + " form-control"} onChange={handleNameChange} placeholder="Graph Name" value={name} />
+        <select className={styles.mb3 + " form-control"} onChange={handleTypeSelect}>
           <option value="mentions">User Mentions</option>
           <option value="channels">Channel Subscriptions</option>
         </select>
@@ -526,16 +526,16 @@ class AddGraph extends Component {
           this.state.type == "mentions" ?
           <div>
             {/* TODO: FILL IN SELECT WITH CHANNELS */}
-            <select className="form-control" defaultValue="" onChange={handleChannelSelect}>
+            <select className={styles.mb3 + " form-control"} defaultValue="" onChange={handleChannelSelect}>
               <option value="" disabled>{channelPrompt}</option>
               {channelSelect}
             </select>
-            <input className="form-control" onChange={handleMentionsChange} placeholder="Minimum Mentions" value={mentions}/>
+            <input className={styles.mb3 + " form-control"} onChange={handleMentionsChange} placeholder="Minimum Mentions" value={mentions}/>
           </div> : null
         }
         {
           this.state.type == "channels" ?
-          <input className="form-control" onChange={handleUserCountChange} placeholder="User Count" value={users}/> : null
+          <input className={styles.mb3 + " form-control"} onChange={handleUserCountChange} placeholder="User Count" value={users}/> : null
         }
         <button className="btn btn-primary" onClick={handleClick}>Add</button>
       </div>
