@@ -415,10 +415,10 @@ export class ViewGraph extends Component {
       <div className={styles.fullHeight}>
         <div className={styles.fullHeight}>
           {
-            type == 'mentions' ? <ForceGraph domain={domain} type="mentions" channelID={channelID} threshold={threshold}/> : null
+            type == 'mentions' ? <ForceGraph domain={domain} graphType="mentions" channelID={channelID} threshold={threshold}/> : null
           }
           {
-            type == 'channels' ? <ForceGraph domain={domain} type="channels" limit={userLimit} /> : null
+            type == 'channels' ? <ForceGraph domain={domain} graphType="channels" limit={userLimit} /> : null
           }
           {/* <ForceGraph domain={domain} channelID={channelID} threshold={threshold}/> */}
         </div>
