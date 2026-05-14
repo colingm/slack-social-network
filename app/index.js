@@ -7,6 +7,12 @@ import './app.global.css';
 
 const store = configureStore();
 
+pendo.initialize({
+  visitor: {
+    id: ''
+  }
+});
+
 render(
   <AppContainer>
     <Root store={store} history={history} />
