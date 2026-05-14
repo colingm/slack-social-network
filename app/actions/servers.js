@@ -6,11 +6,24 @@ import storage from 'electron-json-storage';
 const SERVER_LIST_URL = 'http://35.226.139.18:8080/api/v1/teams';
 
 export function addServer(id: number) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch({
       type: actions.ADD_SERVER,
       id: id
     });
+
+    const state = getState();
+    const serverDomain = state.servers_list[id] ? state.servers_list[id].domain : undefined;
+    const totalServersAfterAdd = Object.keys(state.servers).length;
+
+    if (typeof pendo !== 'undefined') {
+      pendo.track("server_added", {
+        serverId: String(id),
+        serverDomain: serverDomain || "",
+        totalServersAfterAdd: totalServersAfterAdd
+      });
+    }
+
     dispatch(selectServer(id));
   }
 }
@@ -78,11 +91,23 @@ export function loadServersListIfNeeded() {
         if (!Array.isArray(data) || data.length == 0) {
           axios.get(SERVER_LIST_URL).then((response) => {
             dispatch(receiveServersList(response.data));
+            if (typeof pendo !== 'undefined') {
+              pendo.track("servers_list_loaded", {
+                source: "api",
+                teamCount: Array.isArray(response.data) ? response.data.length : 0
+              });
+            }
           }).catch((error) => {
             console.log(error);
           });
         } else {
           dispatch(receiveServersList(data));
+          if (typeof pendo !== 'undefined') {
+            pendo.track("servers_list_loaded", {
+              source: "cache",
+              teamCount: data.length
+            });
+          }
         }
       });
     }
@@ -141,6 +166,14 @@ function loadServerProgress(serverId) {
       if (progress < 100) {
         setTimeout(() => dispatch(loadServerProgress(serverId)),
                                   SERVER_PROGRESS_INTERVAL);
+      } else {
+        if (typeof pendo !== 'undefined') {
+          pendo.track("server_data_processing_completed", {
+            serverId: String(serverId),
+            serverDomain: domain,
+            finalProgress: progress
+          });
+        }
       }
     }).catch((error) => {
       console.log(error);

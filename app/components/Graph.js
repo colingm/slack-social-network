@@ -137,8 +137,30 @@ class ForceGraph extends Component {
         data = {nodes: Object.values(nodes), links: links};
         this.createForceGraph(data);
         this.setState({ data, isLoading: false });
+
+        if (typeof pendo !== 'undefined') {
+          pendo.track("graph_data_loaded", {
+            graphType: type,
+            domain: domain,
+            channelID: channelID,
+            threshold: String(threshold || ""),
+            nodeCount: data.nodes.length,
+            linkCount: data.links.length
+          });
+        }
       })
-      .catch((error) => this.setState({ error, isLoading: false }));
+      .catch((error) => {
+        this.setState({ error, isLoading: false });
+        if (typeof pendo !== 'undefined') {
+          pendo.track("graph_data_load_failed", {
+            graphType: type,
+            domain: domain,
+            channelID: channelID,
+            threshold: String(threshold || ""),
+            errorMessage: error.message ? error.message.substring(0, 100) : "unknown"
+          });
+        }
+      });
     } else {
       let url = `${API_URL}/${domain}/users?limit=${limit}`;
       fetch(url)
@@ -177,9 +199,29 @@ class ForceGraph extends Component {
           let data = {nodes: Object.values(nodes), links};
           this.createForceGraph(data);
           this.setState({data, isLoading: false});
+
+          if (typeof pendo !== 'undefined') {
+            pendo.track("graph_data_loaded", {
+              graphType: type,
+              domain: domain,
+              userLimit: String(limit || ""),
+              nodeCount: data.nodes.length,
+              linkCount: data.links.length
+            });
+          }
         });
       })
-      .catch((error) => this.setState({ error, isLoading: false }));
+      .catch((error) => {
+        this.setState({ error, isLoading: false });
+        if (typeof pendo !== 'undefined') {
+          pendo.track("graph_data_load_failed", {
+            graphType: type,
+            domain: domain,
+            userLimit: String(limit || ""),
+            errorMessage: error.message ? error.message.substring(0, 100) : "unknown"
+          });
+        }
+      });
     }
 
   }
@@ -484,6 +526,17 @@ class AddGraph extends Component {
 
   handleClick = (e) => {
     const { name, type, channel, mentions, users } = this.state;
+
+    if (typeof pendo !== 'undefined') {
+      pendo.track("graph_created", {
+        graphName: name,
+        graphType: type,
+        channelID: channel || "",
+        mentionsThreshold: mentions || "",
+        userCountLimit: users || "",
+        serverDomain: this.props.domain || ""
+      });
+    }
 
     this.setState({
       name: "",
